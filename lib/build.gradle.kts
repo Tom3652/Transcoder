@@ -22,7 +22,7 @@ android {
 
 dependencies {
     api("com.otaliastudios.opengl:egloo:0.6.1")
-    api("androidx.annotation:annotation:1.2.0")
+    api("androidx.annotation:annotation:1.3.0")
 
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test:rules:1.4.0")

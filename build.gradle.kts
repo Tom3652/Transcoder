@@ -7,12 +7,11 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
 
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30")
-        classpath("com.android.tools.build:gradle:7.0.2")
+        classpath("com.android.tools.build:gradle:7.1.1")
         classpath("io.deepmedia.tools:publisher:0.6.0")
     }
 }
@@ -21,10 +20,12 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
 }
 
+/*
 tasks.register("clean", Delete::class) {
     delete(buildDir)
 }
+
+ */
