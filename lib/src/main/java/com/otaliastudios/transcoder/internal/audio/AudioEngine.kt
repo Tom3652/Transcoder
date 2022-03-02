@@ -7,12 +7,12 @@ import com.otaliastudios.transcoder.internal.audio.remix.AudioRemixer
 import com.otaliastudios.transcoder.internal.codec.*
 import com.otaliastudios.transcoder.internal.pipeline.*
 import com.otaliastudios.transcoder.internal.utils.Logger
-import com.otaliastudios.transcoder.internal.utils.trackMapOf
 import com.otaliastudios.transcoder.resample.AudioResampler
 import com.otaliastudios.transcoder.stretch.AudioStretcher
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.min
 
 /**
  * Performs audio rendering, from decoder output to encoder input, applying sample rate conversion,
@@ -44,7 +44,7 @@ internal class AudioEngine(
     override fun handleRawFormat(rawFormat: MediaFormat) {
         log.i("handleRawFormat($rawFormat)")
         this.rawFormat = rawFormat
-        remixer = AudioRemixer[rawFormat.channels, targetFormat.channels]
+        remixer = AudioRemixer[min(rawFormat.channels, 2), min(targetFormat.channels, 2)]
         chunks = ChunkQueue(rawFormat.sampleRate, rawFormat.channels)
     }
 
