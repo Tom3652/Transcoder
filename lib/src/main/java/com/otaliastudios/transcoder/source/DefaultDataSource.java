@@ -66,12 +66,15 @@ public abstract class DefaultDataSource implements DataSource {
             }
         }
 
+        /*
         // Fetch the start timestamp. Only way to do this is select tracks.
         // This is very important to have a timebase e.g. for seeks that happen before any read.
         for (int i = 0; i < mExtractor.getTrackCount(); i++) mExtractor.selectTrack(i);
         mOriginUs = mExtractor.getSampleTime();
         LOG.v("initialize(): found origin=" + mOriginUs);
         for (int i = 0; i < mExtractor.getTrackCount(); i++) mExtractor.unselectTrack(i);
+
+         */
         mInitialized = true;
 
         // Debugging mOriginUs issues.
@@ -141,6 +144,9 @@ public abstract class DefaultDataSource implements DataSource {
 
     @Override
     public long seekTo(long desiredPositionUs) {
+        // Must be called if not to seek.
+        initializeMOriginUsIfNotYet();
+
         boolean hasVideo = mSelectedTracks.contains(TrackType.VIDEO);
         boolean hasAudio = mSelectedTracks.contains(TrackType.AUDIO);
         LOG.i("seekTo(): seeking to " + (mOriginUs + desiredPositionUs)
@@ -236,7 +242,7 @@ public abstract class DefaultDataSource implements DataSource {
 
     @Override
     public long getPositionUs() {
-        if (!isInitialized()) return 0;
+        if (!isInitializedOriginUs()) return 0;
 
         // Return the fastest track.
         // This ensures linear behavior over time: if a track is behind the other,
@@ -255,8 +261,8 @@ public abstract class DefaultDataSource implements DataSource {
             float[] location = new ISO6709LocationParser().parse(string);
             if (location != null) {
                 double[] result = new double[2];
-                result[0] = (double) location[0];
-                result[1] = (double) location[1];
+                result[0] = location[0];
+                result[1] = location[1];
                 return result;
             }
         }
@@ -288,5 +294,15 @@ public abstract class DefaultDataSource implements DataSource {
     public MediaFormat getTrackFormat(@NonNull TrackType type) {
         LOG.i("getTrackFormat(" + type + ")");
         return mFormat.getOrNull(type);
+    }
+
+    private boolean isInitializedOriginUs() {
+        return mOriginUs != Long.MIN_VALUE;
+    }
+
+    private void initializeMOriginUsIfNotYet() {
+        if (!isInitializedOriginUs()) {
+            mOriginUs = mExtractor.getSampleTime();
+        }
     }
 }
